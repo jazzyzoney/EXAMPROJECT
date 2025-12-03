@@ -1,0 +1,30 @@
+{
+  "name": "examproject",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jazzyzoney/EXAMPROJECT.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/jazzyzoney/EXAMPROJECT/issues"
+  },
+  "homepage": "https://github.com/jazzyzoney/EXAMPROJECT#readme",
+  "description": "",
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.10",
+    "express": "^5.2.1",
+    "node-cron": "^4.2.1",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7"
+  }
+}
