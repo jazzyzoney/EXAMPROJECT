@@ -41,9 +41,14 @@ router.post("/api/login", async (req, res) => {
 
     await db.run("UPDATE users SET login_count = login_count + 1 WHERE id = ?", [user.id])
 
-    req.session.user = { id: user.id, email: user.email }
-    
-    res.send({ message: "Logged in", user: req.session.user, isFirstLogin })
+    if (passwordMatch) {
+    req.session.user = {
+        id: user.id,
+        username: user.username,
+        role: user.role
+    };
+    res.json({ message: "Logged in", role: user.role });
+}
 })
 
 

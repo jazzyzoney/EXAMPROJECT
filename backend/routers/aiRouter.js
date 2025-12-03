@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import db from '../database/connection.js';
+import { isAdmin } from '../middleware/isAdmin.js';
 
 const router = Router();
 
@@ -26,11 +27,7 @@ const bratzPersonalities = {
 };
 
 // --- 2. ROUTE ---
-router.post('/generate-draft', async (req, res) => {
-    //middleware?
-    if (!req.session.user) {
-        return res.status(401).send("You must be logged in.");
-    }
+router.post('/api/ai/generate',isAdmin, async (req, res) => {
 
     const { character } = req.body
     const selectedPersona = bratzPersonalities[character];
