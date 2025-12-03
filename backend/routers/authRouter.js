@@ -1,11 +1,11 @@
 import { Router } from "express"
 import { comparePassword, hashedPassword } from "../util/encryption.js"
-import { getDb } from "../database/connection.js"
+import db from "../database/connection.js"
 
 const router = Router()
 
 router.post("/api/signup", async (req, res) => {
-    const db = await getDb()
+    const db = await db()
     const { email, password } = req.body
 
     const userExists = await db.get("SELECT * FROM users WHERE email = ?", [email])
@@ -22,7 +22,7 @@ router.post("/api/signup", async (req, res) => {
 })
 
 router.post("/api/login", async (req, res) => {
-    const db = await getDb()
+    const db = await db()
     const { email, password } = req.body;
 
     const user = await db.get("SELECT * FROM users WHERE email = ?", [email]) 
