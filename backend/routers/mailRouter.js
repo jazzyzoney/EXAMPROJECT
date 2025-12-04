@@ -20,7 +20,7 @@ router.post("/api/send-email", async (req, res) => {
     let text = "This is an alert.";
 
     if (type === "signup") {
-        subject = "Welcome to the system!"
+        subject = "Welcome to Stilesville's hottest forum!"
         text = "Thanks for signing up. We are glad to have you."
     } else if (type === "first_login") {
         subject = "Security Alert: First Login"

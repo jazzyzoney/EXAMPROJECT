@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import db from '../database/connection.js';
-import { isAdmin } from '../middleware/isAdmin.js'; // Import the guard
+import { isAdmin } from '../middleware/isAdmin.js';
 
 const router = Router();
 
@@ -16,7 +16,6 @@ router.get('/api/blogs/:id', async (req, res) => {
     const blog = await db.get('SELECT * FROM blogs WHERE id = ?', [req.params.id]);
     res.json({ data: blog });
 });
-
 
 // ---------------------------------------------
 // PROTECTED ROUTES
