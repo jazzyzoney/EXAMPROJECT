@@ -1,4 +1,4 @@
-import db from './connection.js';
+import db from './connection.js'
 import bcrypt from 'bcrypt'
 
 const saltRounds = 12
@@ -12,7 +12,7 @@ async function setup() {
                 username TEXT,
                 role TEXT DEFAULT 'user'
             );
-        `);
+        `)
 
         await db.exec(`
             CREATE TABLE IF NOT EXISTS blogs (
@@ -23,7 +23,7 @@ async function setup() {
                 status TEXT DEFAULT 'draft',
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             );
-        `);
+        `)
 
         //seeding
         const admins =[
@@ -33,7 +33,7 @@ async function setup() {
             { name: 'Yasmin', email: 'yasmin@bratz.com' }
         ]
 
-        const passwordHash = await bcrypt.hash(ADMIN_PASS, saltRounds);
+        const passwordHash = await bcrypt.hash('ADMIN_PASS', saltRounds)
 
         for (const admin of admins) {
             try {
@@ -41,13 +41,13 @@ async function setup() {
                     `INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)`,
                     [admin.name, admin.email, passwordHash, 'admin']
                 );
-                console.log(`✨ Created Admin: ${admin.name}`);
+                console.log(`✨ Created Admin: ${admin.name}`)
             } catch (err) {
             // Ignore error if they already exist
             }
         }
     
-        console.log("✅ Database setup complete.");
+        console.log("✅ Database setup complete.")
     }
 
-setup();
+setup()

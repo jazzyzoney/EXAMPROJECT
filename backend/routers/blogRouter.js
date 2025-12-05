@@ -1,8 +1,8 @@
-import { Router } from 'express';
-import db from '../database/connection.js';
-import { isAdmin } from '../middleware/isAdmin.js';
+import { Router } from 'express'
+import db from '../database/connection.js'
+import { isAdmin } from '../middleware/isAdmin.js'
 
-const router = Router();
+const router = Router()
 
 // ---------------------------------------------
 // PUBLIC ROUTES

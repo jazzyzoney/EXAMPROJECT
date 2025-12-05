@@ -1,11 +1,10 @@
-import { Router } from 'express';
-import { GoogleGenerativeAI } from "@google/generative-ai";
-import db from '../database/connection.js';
-import { isAdmin } from '../middleware/isAdmin.js';
+import { Router } from 'express'
+import { GoogleGenerativeAI } from "@google/generative-ai"
+import db from '../database/connection.js'
+import { isAdmin } from '../middleware/isAdmin.js'
 
-const router = Router();
+const router = Router()
 
-// --- 1. CONFIGURATION ---
 //agent personalities
 const bratzPersonalities = {
     cloe: {
@@ -24,49 +23,62 @@ const bratzPersonalities = {
         name: "Yasmin",
         prompt: "You are Yasmin from Bratz (Pretty Princess). You are boho-chic, love nature, poetry, and vintage clothes. Write a blog post (max 150 words) about inner beauty or nature. Use emojis like 🌸🦋."
     }
-};
+}
 
-// --- 2. ROUTE ---
 router.post('/api/ai/generate',isAdmin, async (req, res) => {
 
     const { character } = req.body
-    const selectedPersona = bratzPersonalities[character];
+    const selectedPersona = bratzPersonalities[character]
 
     if (!selectedPersona) {
-        return res.status(400).send("Unknown Bratz character.");
+        return res.status(400).send("Unknown Bratz character.")
     }
 
     try {
-        // --- 3. AI LOGIC ---
-        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
 
-        //gemini
-        const result = await model.generateContent(selectedPersona.prompt);
-        const aiResponse = result.response.text();
+        const result = await model.generateContent(selectedPersona.prompt)
+        const aiResponse = result.response.text()
 
-        // --- 4. DATABASE SAVE ---
+        //saving the response from gemini in the database
         await db.run(
             `INSERT INTO blogs (title, content, author, status) VALUES (?, ?, ?, ?)`,
             [`${selectedPersona.name}'s Update`, aiResponse, selectedPersona.name, 'draft']
-        );
+        )
 
-        console.log(`✅ Agent ${character} wrote a new draft.`);
-        
-        //success to frontend
-        res.json({ 
-            success: true, 
-            message: `Draft created by ${character}!`,
-            data: { 
-                title: `${selectedPersona.name}'s Update`,
-                author: selectedPersona.name 
-            }
+        // Let's assume resultDB.lastID is the new post ID
+        const newPost = {
+            id: resultDB.lastID,
+            title: `${persona.name}'s Update`,
+            author: persona.name,
+            content: aiText 
+        }
+
+        // --- 1. WEBSOCKET NOTIFICATION (Real-time) ---
+        // This tells every connected frontend: "Hey! New content!"
+        req.io.emit("new_post_alert", { 
+            message: `${newPost.author} just posted: ${newPost.title}!`,
+            post: newPost 
         });
+
+        // --- 2. MAIL NOTIFICATION (Async) ---
+        // Get all users who want emails
+        const subscribers = await db.all("SELECT email FROM users WHERE role = 'user'");
+        
+        // Loop and send (simplified)
+        subscribers.forEach(user => {
+            console.log(`📧 Sending mail to ${user.email}: "New post from ${newPost.author}!"`);
+            // Call your nodemailer function here:
+            // sendNewsletter(user.email, newPost.title, newPost.content);
+        });
+
+        res.json({ success: true, blog: newPost });
 
     } catch (error) {
         console.error("AI Error:", error);
-        res.status(500).send("The Agent failed to write the blog.");
+        res.status(500).send("The Agent failed to write the blog.")
     }
-});
+})
 
-export default router;
+export default router

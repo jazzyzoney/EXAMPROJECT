@@ -41,16 +41,16 @@ router.post("/api/login", async (req, res) => {
 
     await db.run("UPDATE users SET login_count = login_count + 1 WHERE id = ?", [user.id])
 
+    // not sure 
     if (passwordMatch) {
     req.session.user = {
         id: user.id,
         username: user.username,
         role: user.role
-    };
-    res.json({ message: "Logged in", role: user.role });
+    }
+    res.json({ message: "Logged in", role: user.role, isFirstLogin })
 }
 })
-
 
 router.post("/api/logout", (req, res) => {
     req.session.destroy(() => {

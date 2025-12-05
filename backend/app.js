@@ -1,58 +1,59 @@
-// import express from 'express'
-// import 'dotenv/config'
-// // Import your routers
-// // import authRouter from './routers/authRouter.js'
-// import aiController from './backend/controller/aiController.js'
-
-// const app = express()
-
-// app.set('view engine', 'ejs')
-// app.set('view', './frontend/view')
-
-// app.use(express.static('frontend/public'))
-// app.use(express.urlencoded({ extended: true })) // Important for form data!
-
-// // Routes
-// // app.use(authRouter);
-
-// // The Admin Route to trigger the AI
-// // In a real app, ensure you add middleware to check if user is admin!
-// app.post('/admin/generate-draft', aiController.triggerAgentPost)
-
-// app.listen(8080, () => {
-//     console.log("Server running on http://localhost:8080")
-// })
-
 import express from "express" 
-import session from "express-session" 
 import "dotenv/config" 
+import http from "http"
+import { Server } from "socket.io"
+
+import session from "express-session" 
+
+const app = express();
+app.use(express.json());
+
+//cors
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", req.headers.origin || "*")
+  res.header("Access-Control-Allow-Credentials", "true")
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
+  next();
+})
+
+app.use(session({
+    secret: 'SESSION_SECRET',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { secure: false } 
+})) 
+
+// socket?
+const server = http.createServer(app);
+
+const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:5173",
+        methods: ["GET", "POST"]
+    }
+});
+
+app.use((req, res, next) => {
+    req.io = io;
+    next();
+});
 
 import authRouter from "./routers/authRouter.js" 
-import mailRouter from "./routers/mailRouter.js" 
-import getDb from "./database/connection.js"
+app.use(authRouter) 
 
+import mailRouter from "./routers/mailRouter.js"
+app.use(mailRouter) 
 
-const app = express() 
+import blogRouter from "./routers/blogRouter.js"
+app.use(blogRouter)
 
-app.use(express.json()) 
+import aiRouter from "./routers/aiRouter.js"
+app.use(aiRouter)
 
-// //cors without the library
-// app.use((req, res, next) => {
-//   res.header("Access-Control-Allow-Origin", req.headers.origin || "*")
-//   res.header("Access-Control-Allow-Credentials", "true")
-//   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
-//   next();
-// })
-
-// app.use(session({
-//     secret: 'SESSION_SECRET',
-//     resave: false,
-//     saveUninitialized: false,
-//     cookie: { secure: false } 
-// })) 
-
-// app.use(authRouter) 
-// app.use(mailRouter) 
+// fallback
+app.all("/{*splat}", (req, res) => { 
+    res.send(`<h1>404</h1> <h3>didnt find a matching route</h3>`)
+})
 
 const PORT = 8080 
-app.listen(PORT, () => console.log("Server running on port", PORT)) 
+server.listen(PORT, () => console.log("Server running on port", PORT)) 
