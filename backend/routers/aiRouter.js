@@ -37,7 +37,7 @@ router.post('/api/ai/generate',isAdmin, async (req, res) => {
 
     try {
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" })
 
         const result = await model.generateContent(selectedPersona.prompt)
         const aiResponse = result.response.text()

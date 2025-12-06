@@ -1,16 +1,22 @@
 import db from './connection.js'
 import bcrypt from 'bcrypt'
+import "dotenv/config" 
 
 const saltRounds = 12
 
 async function setup() {
+
+    await db.exec("DROP TABLE IF EXISTS users")
+    await db.exec("DROP TABLE IF EXISTS blogs")
+
         await db.exec(`
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 email TEXT UNIQUE,
                 password TEXT,
                 username TEXT,
-                role TEXT DEFAULT 'user'
+                role TEXT DEFAULT 'user',
+                login_count INTEGER DEFAULT 0
             );
         `)
 
@@ -33,13 +39,14 @@ async function setup() {
             { name: 'Yasmin', email: 'yasmin@bratz.com' }
         ]
 
-        const passwordHash = await bcrypt.hash('ADMIN_PASS', saltRounds)
+        const adminPassword = process.env.ADMIN_PASS
+        const passwordHash = await bcrypt.hash(adminPassword, saltRounds)
 
         for (const admin of admins) {
             try {
                 await db.run(
-                    `INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)`,
-                    [admin.name, admin.email, passwordHash, 'admin']
+                    `INSERT INTO users (username, email, password, role, login_count) VALUES (?, ?, ?, ?, ?)`,
+                    [admin.name, admin.email, passwordHash, 'admin', 1]
                 );
                 console.log(`✨ Created Admin: ${admin.name}`)
             } catch (err) {

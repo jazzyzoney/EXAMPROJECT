@@ -1,8 +1,10 @@
 <script>
-  import { onMount } from "svelte"
+  import { createEventDispatcher, onMount } from "svelte"
   import { user } from "../stores/userStore.js"
   import toastr from 'toastr'
   import 'toastr/build/toastr.min.css'
+
+  const dispatch = createEventDispatcher()
 
   let email = ""
   let password = ""
@@ -30,6 +32,7 @@
       if (res.ok) {
         const data = await res.json()
         $user = data.user
+        dispatch('loginSuccess', data.user)
       }
     } catch (e) {
       console.log("Not logged in")
@@ -43,7 +46,7 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, type }),
         credentials: "include"
-    });
+    })
   }
 
   //signup
@@ -76,6 +79,7 @@
     const data = await res.json()
     if (res.ok) {
       $user = data.user
+      dispatch('loginSuccess', data.user)
       toastr.success("Welcome back!", "Login Successful")
 
       //check first time login
@@ -99,8 +103,6 @@
 </script>
 
 <main>
-  <h1>Auth System</h1>
-
   {#if $user}
     <div class="card">
       <h2>Hello, {$user.email}</h2>

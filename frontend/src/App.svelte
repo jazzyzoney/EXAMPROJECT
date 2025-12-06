@@ -1,44 +1,71 @@
 <script>
     import Login from './pages/Login.svelte';
-    import Home from './pages/Home.svelte'; // Create this (it was your main page before)
+    import Home from './pages/Home.svelte'; 
     import Admin from './pages/Admin.svelte';
-    // import Corners from './pages/Corners.svelte';
-    // import Navbar from './pages/Navbar.svelte'; // Optional helper
+    import { user } from './stores/userStore.js'; // [NEW] Import the store
     
-    // State to track which page is open
     let currentPage = 'home';
-    let user = null; // To track if logged in
 
-    // Function to change pages (passed down to components)
-    function navigate(page) {
-        currentPage = page;
+    // [NEW] Reactive Logic
+    // Whenever the $user store changes, run this logic automatically
+    $: if ($user) {
+        // If user is admin, go to admin page, else home
+        if ($user.role === 'admin') {
+            currentPage = 'admin';
+        } else {
+            currentPage = 'home';
+        }
     }
 
-    function handleLogin(loggedInUser) {
-        user = loggedInUser;
-        currentPage = user.role === 'admin' ? 'admin' : 'home';
+    function navigate(page) {
+        currentPage = page;
     }
 </script>
 
 <main>
     <nav>
         <button on:click={() => navigate('home')}>🏠 Home</button>
-        <button on:click={() => navigate('corners')}>✨ Corners</button>
-        {#if user && user.role === 'admin'}
+        
+        {#if $user && $user.role === 'admin'}
             <button on:click={() => navigate('admin')}>👑 Admin</button>
         {/if}
-        {#if !user}
+
+        {#if !$user}
             <button on:click={() => navigate('login')}>🔑 Login</button>
+        {:else}
+            <button on:click={() => navigate('login')}>👤 {$user.email}</button>
         {/if}
     </nav>
 
-    {#if currentPage === 'home'}
-        <Home />
-    <!-- {:else if currentPage === 'corners'}
-        <Corners /> -->
-    {:else if currentPage === 'admin'}
-        <Admin />
-    {:else if currentPage === 'login'}
-        <Login on:loginSuccess={(e) => handleLogin(e.detail)} /> 
-    {/if}
+    <div class="content">
+        {#if currentPage === 'home'}
+            <Home />
+        {:else if currentPage === 'admin'}
+            {#if $user && $user.role === 'admin'}
+                <Admin />
+            {:else}
+                <p>Access Denied 💅</p>
+            {/if}
+        {:else if currentPage === 'login'}
+            <Login /> 
+        {/if}
+    </div>
 </main>
+
+<style>
+    nav { 
+        display: flex; 
+        gap: 10px; 
+        padding: 20px; 
+        background: #eee; 
+        justify-content: center;
+    }
+    button {
+        padding: 10px 15px;
+        cursor: pointer;
+        border: none;
+        background: white;
+        border-radius: 5px;
+    }
+    button:hover { background: #ddd; }
+</style>
