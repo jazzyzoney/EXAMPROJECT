@@ -1,23 +1,13 @@
 import { Router } from "express"
-import nodemailer from "nodemailer"
+import { sendEmail } from "../util/mailer.js"
 
 const router = Router()
 
-//ethereal
-const transporter = nodemailer.createTransport({
-    host: 'smtp.ethereal.email',
-    port: 587,
-    auth: {
-        user: 'fyrimcr3rrp5b5gr@ethereal.email',
-        pass: 'mAszfyQCG689RXHSRR'
-    }
-})
-
 router.post("/api/send-email", async (req, res) => {
-    const { email, type } = req.body;
+    const { email, type } = req.body
     
-    let subject = "Notification";
-    let text = "This is an alert.";
+    let subject = "Notification"
+    let text = "This is an alert."
 
     if (type === "signup") {
         subject = "Welcome to Stilesville's hottest forum!"
@@ -27,21 +17,11 @@ router.post("/api/send-email", async (req, res) => {
         text = "We noticed your first login to the system."
     }
 
-    try {
-        const info = await transporter.sendMail({
-            from: '"Node System" <no-reply@system.com>',
-            to: email,
-            subject: subject,
-            text: text,
-            html: `<b>${text}</b>`
-        })
+    const success = await sendEmail(email, subject, text)
 
-        //logs the fake email URL
-        console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info))
-        
+    if (success) {
         res.send({ message: "Email sent" })
-    } catch (error) {
-        console.error("Email Error:", error)
+    } else {
         res.status(500).send({ message: "Failed to send email" })
     }
 })

@@ -43,7 +43,7 @@ async function setup() {
                 );
                 console.log(`✨ Created Admin: ${admin.name}`)
             } catch (err) {
-            // Ignore error if they already exist
+            //ignore error if they already exist
             }
         }
     

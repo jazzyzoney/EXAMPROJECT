@@ -8,35 +8,35 @@ const router = Router()
 // PUBLIC ROUTES
 // ---------------------------------------------
 router.get('/api/blogs', async (req, res) => {
-    const blogs = await db.all('SELECT * FROM blogs WHERE status = "published" ORDER BY created_at DESC');
-    res.json({ data: blogs });
-});
+    const blogs = await db.all('SELECT * FROM blogs WHERE status = "published" ORDER BY created_at DESC')
+    res.json({ data: blogs })
+})
 
 router.get('/api/blogs/:id', async (req, res) => {
-    const blog = await db.get('SELECT * FROM blogs WHERE id = ?', [req.params.id]);
-    res.json({ data: blog });
-});
+    const blog = await db.get('SELECT * FROM blogs WHERE id = ?', [req.params.id])
+    res.json({ data: blog })
+})
 
 // ---------------------------------------------
 // PROTECTED ROUTES
 // ---------------------------------------------
 router.post('/api/blogs', isAdmin, async (req, res) => {
-    const { title, content, author, status } = req.body;
+    const { title, content, author, status } = req.body
     
     try {
         await db.run(
             `INSERT INTO blogs (title, content, author, status) VALUES (?, ?, ?, ?)`,
             [title, content, author, status || 'draft']
-        );
-        res.json({ message: "Blog saved successfully!" });
+        )
+        res.json({ message: "Blog saved successfully!" })
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        res.status(500).json({ error: err.message })
     }
-});
+})
 
 router.delete('/api/blogs/:id', isAdmin, async (req, res) => {
-    await db.run('DELETE FROM blogs WHERE id = ?', [req.params.id]);
-    res.json({ message: "Blog deleted." });
-});
+    await db.run('DELETE FROM blogs WHERE id = ?', [req.params.id])
+    res.json({ message: "Blog deleted." })
+})
 
-export default router;
+export default router

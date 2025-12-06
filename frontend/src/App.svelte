@@ -1,9 +1,9 @@
 <script>
-    import Login from './lib/Login.svelte';
-    import Feed from './lib/Feed.svelte'; // Create this (it was your main page before)
-    import Admin from './lib/Admin.svelte';
-    import Corners from './lib/Corners.svelte';
-    import Navbar from './lib/Navbar.svelte'; // Optional helper
+    import Login from './pages/Login.svelte';
+    import Home from './pages/Home.svelte'; // Create this (it was your main page before)
+    import Admin from './pages/Admin.svelte';
+    // import Corners from './pages/Corners.svelte';
+    // import Navbar from './pages/Navbar.svelte'; // Optional helper
     
     // State to track which page is open
     let currentPage = 'home';
@@ -33,9 +33,9 @@
     </nav>
 
     {#if currentPage === 'home'}
-        <Feed />
-    {:else if currentPage === 'corners'}
-        <Corners />
+        <Home />
+    <!-- {:else if currentPage === 'corners'}
+        <Corners /> -->
     {:else if currentPage === 'admin'}
         <Admin />
     {:else if currentPage === 'login'}

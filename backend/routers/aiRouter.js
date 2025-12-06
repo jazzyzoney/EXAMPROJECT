@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import db from '../database/connection.js'
 import { isAdmin } from '../middleware/isAdmin.js'
+import { sendEmail } from '../util/mailer.js'
 
 const router = Router()
 
@@ -9,7 +10,7 @@ const router = Router()
 const bratzPersonalities = {
     cloe: {
         name: "Cloe",
-        prompt: "You are Cloe from Bratz (Angel). You are dramatic, sweet, and obsessed with animal print and sparkling textures. You call your friends 'Angel'. Write a short blog post (max 150 words) about your day or a fashion trend. Use emojis like 💅✨."
+        prompt: "You are Cloe from Bratz (Angel). You are dramatic, sweet, and obsessed with animal print and sparkling textures. Write a short blog post (max 150 words) about your day or a fashion trend. Use emojis like 💅✨."
     },
     jade: {
         name: "Jade",
@@ -42,41 +43,40 @@ router.post('/api/ai/generate',isAdmin, async (req, res) => {
         const aiResponse = result.response.text()
 
         //saving the response from gemini in the database
-        await db.run(
+        const resultDB = await db.run(
             `INSERT INTO blogs (title, content, author, status) VALUES (?, ?, ?, ?)`,
             [`${selectedPersona.name}'s Update`, aiResponse, selectedPersona.name, 'draft']
         )
 
-        // Let's assume resultDB.lastID is the new post ID
-        const newPost = {
+       const newPost = {
             id: resultDB.lastID,
-            title: `${persona.name}'s Update`,
-            author: persona.name,
-            content: aiText 
+            title: `${selectedPersona.name}'s Update`,
+            author: selectedPersona.name,
+            content: aiResponse
         }
 
-        // --- 1. WEBSOCKET NOTIFICATION (Real-time) ---
-        // This tells every connected frontend: "Hey! New content!"
+        //socket?
         req.io.emit("new_post_alert", { 
             message: `${newPost.author} just posted: ${newPost.title}!`,
             post: newPost 
-        });
+        })
 
-        // --- 2. MAIL NOTIFICATION (Async) ---
-        // Get all users who want emails
-        const subscribers = await db.all("SELECT email FROM users WHERE role = 'user'");
+        // or are they really fans?
+        const subscribers = await db.all("SELECT email FROM users WHERE role = 'user'")
         
         // Loop and send (simplified)
-        subscribers.forEach(user => {
-            console.log(`📧 Sending mail to ${user.email}: "New post from ${newPost.author}!"`);
-            // Call your nodemailer function here:
-            // sendNewsletter(user.email, newPost.title, newPost.content);
-        });
+        subscribers.forEach(async (user) => {
+            await sendEmail(
+                user.email,
+                'New blog from ${newPost.author}!',
+                '${newPost.author} just posted about: ${newPost.title}. Check it out!'
+            )
+        })
 
-        res.json({ success: true, blog: newPost });
+        res.json({ success: true, blog: newPost })
 
     } catch (error) {
-        console.error("AI Error:", error);
+        console.error("AI Error:", error)
         res.status(500).send("The Agent failed to write the blog.")
     }
 })

@@ -2,19 +2,22 @@ import express from "express"
 import "dotenv/config" 
 import http from "http"
 import { Server } from "socket.io"
+import cors from "cors"
 
 import session from "express-session" 
 
 const app = express();
+
+const server = http.createServer(app);
+
 app.use(express.json());
 
 //cors
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", req.headers.origin || "*")
-  res.header("Access-Control-Allow-Credentials", "true")
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept")
-  next();
-})
+app.use(cors({
+    origin: 'http://localhost:5173', // Your Svelte Frontend URL
+    credentials: true,               // Allows session cookies to be sent
+    methods: ["GET", "POST", "PUT", "DELETE"]
+}));
 
 app.use(session({
     secret: 'SESSION_SECRET',
@@ -23,8 +26,6 @@ app.use(session({
     cookie: { secure: false } 
 })) 
 
-// socket?
-const server = http.createServer(app);
 
 const io = new Server(server, {
     cors: {
