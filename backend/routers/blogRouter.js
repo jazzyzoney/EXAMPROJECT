@@ -4,11 +4,8 @@ import { isAdmin } from '../middleware/isAdmin.js'
 
 const router = Router()
 
-// ---------------------------------------------
-// PUBLIC ROUTES
-// ---------------------------------------------
 router.get('/api/blogs', async (req, res) => {
-    const blogs = await db.all('SELECT * FROM blogs WHERE status = "published" ORDER BY created_at DESC')
+    const blogs = await db.all('SELECT * FROM blogs ORDER BY created_at DESC')
     res.json({ data: blogs })
 })
 
@@ -26,9 +23,9 @@ router.post('/api/blogs', isAdmin, async (req, res) => {
     try {
         await db.run(
             `INSERT INTO blogs (title, content, author, status) VALUES (?, ?, ?, ?)`,
-            [title, content, author, status || 'draft']
+            [title, content, author, status]
         )
-        res.json({ message: "Blog saved successfully!" })
+        res.json({ message: "Blog posted successfully!" })
     } catch (err) {
         res.status(500).json({ error: err.message })
     }

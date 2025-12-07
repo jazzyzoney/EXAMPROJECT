@@ -16,14 +16,13 @@
 </script>
 
 <style>
-    /* Add your Bratz styling here */
     h1 { color: #d63384; font-family: sans-serif; }
     .blog-card { border: 2px solid #ff69b4; margin: 10px; padding: 15px; border-radius: 10px; }
     .author { font-weight: bold; color: #800080; }
 </style>
 
 <main>
-    <h1>✨ Bratz Blog Feed ✨</h1>
+    <h1>✨ Blog Feed ✨</h1>
 
     {#if blogs.length === 0}
         <p>Loading the latest gossip...</p>

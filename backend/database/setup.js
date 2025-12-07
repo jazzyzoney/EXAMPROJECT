@@ -26,7 +26,7 @@ async function setup() {
                 title TEXT,
                 content TEXT,
                 author TEXT,
-                status TEXT DEFAULT 'draft',
+                status TEXT DEFAULT 'published',
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             );
         `)

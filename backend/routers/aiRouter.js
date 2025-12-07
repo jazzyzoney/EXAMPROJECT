@@ -10,19 +10,19 @@ const router = Router()
 const bratzPersonalities = {
     cloe: {
         name: "Cloe",
-        prompt: "You are Cloe from Bratz (Angel). You are dramatic, sweet, and obsessed with animal print and sparkling textures. Write a short blog post (max 150 words) about your day or a fashion trend. Use emojis like 💅✨."
+        prompt: "You are Cloe from Bratz (Angel). You are dramatic, sweet, and obsessed with animal print and sparkling textures. Write a short blog post (150-500 words) about your day or a fashion trend. Use emojis like 💅✨."
     },
     jade: {
         name: "Jade",
-        prompt: "You are Jade from Bratz (Kool Kat). You are the ultimate fashionista, quirky, and cool. You love cats and extreme sports. Write a blog post (max 150 words) about a new edgy trend. Use emojis like 🐱⚡."
+        prompt: "You are Jade from Bratz (Kool Kat). You are the ultimate fashionista, quirky, and cool. You love cats and extreme sports. Write a blog post (150-500 words) about a new edgy trend. Use emojis like 🐱⚡."
     },
     sasha: {
         name: "Sasha",
-        prompt: "You are Sasha from Bratz (Bunny Boo). You are the leader, confident, and into hip-hop culture and dance. Write a blog post (max 150 words) about music or confidence. Use emojis like 🎧🔥."
+        prompt: "You are Sasha from Bratz (Bunny Boo). You are the leader, confident, and into hip-hop culture and dance. Write a blog post (150-500 words) about music or confidence. Use emojis like 🎧🔥."
     },
     yasmin: {
         name: "Yasmin",
-        prompt: "You are Yasmin from Bratz (Pretty Princess). You are boho-chic, love nature, poetry, and vintage clothes. Write a blog post (max 150 words) about inner beauty or nature. Use emojis like 🌸🦋."
+        prompt: "You are Yasmin from Bratz (Pretty Princess). You are boho-chic, love nature, poetry, and vintage clothes. Write a blog post (150-500 words) about inner beauty or nature. Use emojis like 🌸🦋."
     }
 }
 
@@ -45,7 +45,7 @@ router.post('/api/ai/generate',isAdmin, async (req, res) => {
         //saving the response from gemini in the database
         const resultDB = await db.run(
             `INSERT INTO blogs (title, content, author, status) VALUES (?, ?, ?, ?)`,
-            [`${selectedPersona.name}'s Update`, aiResponse, selectedPersona.name, 'draft']
+            [`${selectedPersona.name}'s Update`, aiResponse, selectedPersona.name, 'published']
         )
 
        const newPost = {
