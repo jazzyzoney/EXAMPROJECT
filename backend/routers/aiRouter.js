@@ -45,7 +45,7 @@ router.post('/api/ai/generate',isAdmin, async (req, res) => {
         //saving the response from gemini in the database
         const resultDB = await db.run(
             `INSERT INTO blogs (title, content, author, status) VALUES (?, ?, ?, ?)`,
-            [`${selectedPersona.name}'s Update`, aiResponse, selectedPersona.name, 'published']
+            [`${selectedPersona.name}'s Update`, aiResponse, selectedPersona.name, 'draft']
         )
 
        const newPost = {

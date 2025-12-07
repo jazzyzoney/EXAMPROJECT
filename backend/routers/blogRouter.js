@@ -5,7 +5,22 @@ import { isAdmin } from '../middleware/isAdmin.js'
 const router = Router()
 
 router.get('/api/blogs', async (req, res) => {
-    const blogs = await db.all('SELECT * FROM blogs ORDER BY created_at DESC')
+    //filtering the blogs
+    const { author, status } = req.query
+    let query = "SELECT * FROM blogs WHERE 1=1"
+    let params = []
+
+    if (author) {
+        query += " AND author = ?"
+        params.push(author)
+    }
+    if (status) {
+        query += " AND status = ?"
+        params.push(status)
+    }
+
+    query += " ORDER BY created_at DESC"
+    const blogs = await db.all(query, params)
     res.json({ data: blogs })
 })
 
@@ -17,17 +32,21 @@ router.get('/api/blogs/:id', async (req, res) => {
 // ---------------------------------------------
 // PROTECTED ROUTES
 // ---------------------------------------------
-router.post('/api/blogs', isAdmin, async (req, res) => {
-    const { title, content, author, status } = req.body
-    
+router.put('/api/blogs/:id', isAdmin, async (req, res) => {
+    const { status, content, title } = req.body
     try {
+        // Only update fields that are actually sent
         await db.run(
-            `INSERT INTO blogs (title, content, author, status) VALUES (?, ?, ?, ?)`,
-            [title, content, author, status]
+            `UPDATE blogs SET 
+                status = COALESCE(?, status), 
+                title = COALESCE(?, title), 
+                content = COALESCE(?, content) 
+            WHERE id = ?`,
+            [status, title, content, req.params.id]
         )
-        res.json({ message: "Blog posted successfully!" })
-    } catch (err) {
-        res.status(500).json({ error: err.message })
+        res.json({ message: "Blog updated successfully" })
+    } catch (error) {
+        res.status(500).json({ error: "Update failed" })
     }
 })
 

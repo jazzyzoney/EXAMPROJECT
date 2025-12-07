@@ -8,6 +8,7 @@ async function setup() {
 
     await db.exec("DROP TABLE IF EXISTS users")
     await db.exec("DROP TABLE IF EXISTS blogs")
+    await db.exec("DROP TABLE IF EXISTS questions")
 
         await db.exec(`
             CREATE TABLE IF NOT EXISTS users (
@@ -26,8 +27,19 @@ async function setup() {
                 title TEXT,
                 content TEXT,
                 author TEXT,
-                status TEXT DEFAULT 'published',
+                status TEXT DEFAULT 'draft',
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            );
+        `)
+
+        await db.exec(`
+            CREATE TABLE IF NOT EXISTS questions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                email TEXT,
+                question TEXT,
+                answer TEXT,
+                answered_by TEXT,
+                status TEXT DEFAULT 'pending' 
             );
         `)
 

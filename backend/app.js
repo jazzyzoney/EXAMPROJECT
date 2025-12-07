@@ -11,7 +11,6 @@ const server = http.createServer(app);
 
 app.use(express.json());
 
-//cors
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", req.headers.origin || "*")
   res.header("Access-Control-Allow-Credentials", "true")
@@ -50,6 +49,9 @@ app.use(blogRouter)
 
 import aiRouter from "./routers/aiRouter.js"
 app.use(aiRouter)
+
+import sosRouter from "./routers/sosRouter.js"
+app.use(sosRouter)
 
 // fallback
 app.all("/{*splat}", (req, res) => { 
