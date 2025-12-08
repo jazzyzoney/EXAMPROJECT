@@ -39,7 +39,8 @@ async function setup() {
                 question TEXT,
                 answer TEXT,
                 answered_by TEXT,
-                status TEXT DEFAULT 'pending' 
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                status TEXT DEFAULT 'pending'
             );
         `)
 

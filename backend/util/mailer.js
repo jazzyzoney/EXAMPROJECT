@@ -10,20 +10,11 @@ const transporter = nodemailer.createTransport({
     }
 })
 
+//dummy function to get the app running
 export async function sendEmail(to, subject, text) {
-    try {
-        const info = await transporter.sendMail({
-            from: '"Bratz Blog System" <no-reply@bratz.com>',
-            to: to,
-            subject: subject,
-            text: text,
-            html: `<b>${text}</b>`
-        });
-
-        console.log(`📧 Email sent to ${to}. Preview: ${nodemailer.getTestMessageUrl(info)}`);
-        return true;
-    } catch (error) {
-        console.error("Mailer Error:", error);
-        return false;
-    }
+    console.log(`📧 [MOCK EMAIL SENT]`);
+    console.log(`   To: ${to}`);
+    console.log(`   Subject: ${subject}`);
+    // console.log(`   Body: ${text}`); // Uncomment if you want to see the content
+    return true; // Pretend it worked!
 }

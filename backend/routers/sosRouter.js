@@ -11,8 +11,8 @@ router.post('/api/sos', async (req, res) => {
     
     const { question } = req.body
     await db.run(
-        `INSERT INTO questions (user_email, question) VALUES (?, ?)`,
-        [req.session.user.email, question]
+        `INSERT INTO questions (email, question) VALUES (?, ?)`,
+        [req.session.email, question]
     )
     res.json({ success: true })
 })
@@ -25,7 +25,7 @@ router.get('/api/sos', async (req, res) => {
 // ---------------------------------------------
 // PROTECTED ROUTES
 // ---------------------------------------------
-router.delete('/api/sos/answer', isAdmin, async (req, res) => {
+router.post('/api/sos/answer', isAdmin, async (req, res) => {
     try {
         const question = await db.get("SELECT * FROM questions WHERE status = 'pending' LIMIT 1") //find 1 wuestion
         if (!question) return res.status(400).json({ error: "no pending questions" })
@@ -43,16 +43,16 @@ router.delete('/api/sos/answer', isAdmin, async (req, res) => {
 
         const prompt = `You are ${bratz.name} from Bratz. Your personality is ${bratz.style}.
                         A fan asked: "${question.question}".
-                        Give a ShadowRoot, helpful advisary answer (max 100 words).`
+                        Give a ShadowRoot, helpful advisary answer (max 150 words).`
         
-        const result = await model.generateContent(selectedPersona.prompt)
+        const result = await model.generateContent(prompt)
         const answerText = result.response.text()
 
         await db.run(
-            `UPDATE questions SET answer = ?, answered_by = ?, status = 'answered' WHERE id = ?`
+            `UPDATE questions SET answer = ?, answered_by = ?, status = 'answered' WHERE id = ?`,
             [answerText, bratz.name, question.id]
         )
-        res.json({ success: true, bratz: bratz.name, answer: answerText })
+        res.json({ success: true, character: bratz.name, answer: answerText })
     } catch (error) {
         console.error(error)
         res.status(500).json({ error: "agent failed" })

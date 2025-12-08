@@ -1,10 +1,15 @@
 <script>
     import { onMount } from 'svelte'
     import { user } from '../stores/userStore.js'
+    import { currentPage } from '../stores/pageStore.js';
     
     let loading = false;
     let message = "";
     let drafts = []
+
+    onMount(() => {
+        loadDrafts()
+    })
 
     async function triggerAgent() {
         if(!$user) return
@@ -46,12 +51,12 @@
         const res = await fetch(`http://localhost:8080/api/blogs/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ status: 'published '}),
+            body: JSON.stringify({ status: 'published'}),
             credentials: 'include'
         })
         if (res.ok) {
             message = "✨ Blog published to the homepage!"
-            loadDrafts()
+            $currentPage = 'home'
         }
     }
     onMount(loadDrafts)

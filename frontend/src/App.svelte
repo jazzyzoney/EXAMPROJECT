@@ -24,13 +24,13 @@
 
 <header>
     <div class="branding">
-        <img src="../public/images/sasha_logo.png" alt="Sasha Logo" class="site-logo" />
-        <img src="../public/images/cloe_logo.png" alt="Cloe Logo" class="site-logo" /> 
+        <img src="./images/sasha_logo.png" alt="Sasha Logo" class="site-logo" />
+        <img src="./images/cloe_logo.png" alt="Cloe Logo" class="site-logo" /> 
 
         <h1 class="site-title">Bratz Magazine</h1>
 
-        <img src="../public/images/jade_logo.png" alt="Jade Logo" class="site-logo" />
-        <img src="../public/images/yasmin_logo1.png" alt="Yasmin Logo" class="site-logo" />
+        <img src="./images/jade_logo.png" alt="Jade Logo" class="site-logo" />
+        <img src="./images/yasmin_logo1.png" alt="Yasmin Logo" class="site-logo" />
     </div>
 
     <nav>
@@ -66,21 +66,23 @@
 
 <main>
     <div class="content-card">
-        {#if currentPage === 'home'}
-            <Home />
-        {:else if currentPage === 'corners'}
-            <Corners />
-        {:else if currentPage === 'sos'}
-            <StyleSOS />
-        {:else if currentPage === 'admin'}
-            {#if $user && $user.role === 'admin'}
-                <Admin />
-            {:else}
-                <p>Access Denied 💅</p>
+        {#key currentPage} 
+            {#if currentPage === 'home'}
+                <Home />
+            {:else if currentPage === 'corners'}
+                <Corners />
+            {:else if currentPage === 'sos'}
+                <StyleSOS />
+            {:else if currentPage === 'admin'}
+                {#if $user && $user.role === 'admin'}
+                    <Admin />
+                {:else}
+                    <p>Access Denied 💅</p>
+                {/if}
+            {:else if currentPage === 'login'}
+                <Login /> 
             {/if}
-        {:else if currentPage === 'login'}
-            <Login /> 
-        {/if}
+        {/key}
     </div>
 </main>
 

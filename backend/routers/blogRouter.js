@@ -33,17 +33,23 @@ router.get('/api/blogs/:id', async (req, res) => {
 // PROTECTED ROUTES
 // ---------------------------------------------
 router.put('/api/blogs/:id', isAdmin, async (req, res) => {
-    const { status, content, title } = req.body
+    const { status, title, content } = req.body
+
     try {
-        // Only update fields that are actually sent
-        await db.run(
-            `UPDATE blogs SET 
-                status = COALESCE(?, status), 
-                title = COALESCE(?, title), 
-                content = COALESCE(?, content) 
-            WHERE id = ?`,
-            [status, title, content, req.params.id]
-        )
+       if (status && !title && !content) {
+             await db.run('UPDATE blogs SET status = ? WHERE id = ?', [status, req.params.id]);
+        } 
+        // If we are editing content, run the full update
+        else {
+             await db.run(
+                `UPDATE blogs SET 
+                    status = COALESCE(?, status), 
+                    title = COALESCE(?, title), 
+                    content = COALESCE(?, content) 
+                WHERE id = ?`,
+                [status, title, content, req.params.id]
+            );
+        }
         res.json({ message: "Blog updated successfully" })
     } catch (error) {
         res.status(500).json({ error: "Update failed" })
