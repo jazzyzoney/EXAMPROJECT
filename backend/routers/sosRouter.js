@@ -10,9 +10,10 @@ router.post('/api/sos', async (req, res) => {
     if (!req.session.user) return res.status(401).json({ error: "login to ask a question babes!"})
     
     const { question } = req.body
+    
     await db.run(
         `INSERT INTO questions (email, question) VALUES (?, ?)`,
-        [req.session.email, question]
+        [req.session.user.email, question]
     )
     res.json({ success: true })
 })

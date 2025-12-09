@@ -36,13 +36,22 @@
 
         if (data.user) {
             $user = data.user;
-            dispatch('loginSuccess', data.user);
+            redirectUser(data.user);
         }
       }
     } catch (e) {
       console.log("Not logged in")
     }
   })
+
+  // Helper function to handle redirection
+  function redirectUser(userData) {
+      if (userData.role === 'admin') {
+          $currentPage = 'admin';
+      } else {
+          $currentPage = 'home';
+      }
+  }
 
   //email
   async function sendEmailTrigger(type) {
@@ -84,21 +93,20 @@
     const data = await res.json()
 
     if (res.ok) {
-      if (!data.user) {
-                toastr.error("Login succeeded but no user data received.");
-                return;
-            }
-      
       $user = data.user
 
-      // [FIX] Force navigation immediately after login success
-        if (data.user.role === 'admin') {
-            $currentPage = 'admin';
-        } else {
-            $currentPage = 'home';
-        }
+      toastr.success("Welcome back")
 
-        toastr.success("Welcome back!", "Login Successful");
+      redirectUser(data.user)
+
+      // [FIX] Force navigation immediately after login success
+        // if (data.user.role === 'admin') {
+        //     $currentPage = 'admin';
+        // } else {
+        //     $currentPage = 'home';
+        // }
+
+        //toastr.success("Welcome back!", "Login Successful");
 
       //check first time login
       if (data.isFirstLogin) {

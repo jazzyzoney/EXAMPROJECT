@@ -5,20 +5,19 @@
     import Corners from './pages/Corners.svelte';
     import StyleSOS from './pages/StyleSOS.svelte';
     import { user } from './stores/userStore.js';
+    import { currentPage } from './stores/pageStore.js';
     
-    let currentPage = 'home';
-
     // Reactive Logic
     $: if ($user) {
         if ($user.role === 'admin') {
-            currentPage = 'admin';
+            $currentPage = 'admin';
         } else {
-            currentPage = 'home';
+            $currentPage = 'home';
         }
     }
 
     function navigate(page) {
-        currentPage = page;
+        $currentPage = page;
     }
 </script>
 
@@ -34,26 +33,26 @@
     </div>
 
     <nav>
-        <button on:click={() => navigate('home')} class:active={currentPage === 'home'}>
+        <button on:click={() => navigate('home')} class:active={$currentPage === 'home'}>
             🏠 Home
         </button>
         
-        <button on:click={() => navigate('corners')} class:active={currentPage === 'corners'}>
+        <button on:click={() => navigate('corners')} class:active={$currentPage === 'corners'}>
             ✨ Corners
         </button>
         
-        <button on:click={() => navigate('sos')} class:active={currentPage === 'sos'}>
+        <button on:click={() => navigate('sos')} class:active={$currentPage === 'sos'}>
             💋 Style SOS
         </button>
         
         {#if $user && $user.role === 'admin'}
-            <button on:click={() => navigate('admin')} class:active={currentPage === 'admin'}>
+            <button on:click={() => navigate('admin')} class:active={$currentPage === 'admin'}>
                 👑 Admin
             </button>
         {/if}
 
         {#if !$user}
-            <button on:click={() => navigate('login')} class:active={currentPage === 'login'}>
+            <button on:click={() => navigate('login')} class:active={$currentPage === 'login'}>
                 🔑 Login
             </button>
         {:else}
@@ -66,20 +65,20 @@
 
 <main>
     <div class="content-card">
-        {#key currentPage} 
-            {#if currentPage === 'home'}
+        {#key $currentPage} 
+            {#if $currentPage === 'home'}
                 <Home />
-            {:else if currentPage === 'corners'}
+            {:else if $currentPage === 'corners'}
                 <Corners />
-            {:else if currentPage === 'sos'}
+            {:else if $currentPage === 'sos'}
                 <StyleSOS />
-            {:else if currentPage === 'admin'}
+            {:else if $currentPage === 'admin'}
                 {#if $user && $user.role === 'admin'}
                     <Admin />
                 {:else}
                     <p>Access Denied 💅</p>
                 {/if}
-            {:else if currentPage === 'login'}
+            {:else if $currentPage === 'login'}
                 <Login /> 
             {/if}
         {/key}

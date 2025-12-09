@@ -30,6 +30,7 @@
             
             if (data.success) {
                 message = `✨ Success! ${data.blog.title} has been drafted.`;
+                await loadDrafts()
             } else {
                 message = `❌ Error: ${data.error}`;
             }
