@@ -8,7 +8,10 @@ async function setup() {
 
     await db.exec("DROP TABLE IF EXISTS users")
     await db.exec("DROP TABLE IF EXISTS blogs")
+    await db.exec("DROP TABLE IF EXISTS comments")
     await db.exec("DROP TABLE IF EXISTS questions")
+    await db.exec("DROP TABLE IF EXISTS issues")
+    await db.exec("DROP TABLE IF EXISTS issue_columns")
 
         await db.exec(`
             CREATE TABLE IF NOT EXISTS users (
@@ -33,6 +36,18 @@ async function setup() {
         `)
 
         await db.exec(`
+            CREATE TABLE IF NOT EXISTS comments (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                blog_id INTEGER,
+                username TEXT,
+                content TEXT,
+                role TEXT DEFAULT 'user',
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY(blog_id) REFERENCES blogs(id)
+            );    
+        `)
+
+        await db.exec(`
             CREATE TABLE IF NOT EXISTS questions (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 email TEXT,
@@ -41,6 +56,25 @@ async function setup() {
                 answered_by TEXT,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 status TEXT DEFAULT 'pending'
+            );
+        `)
+
+        await db.exec(`
+            CREATE TABLE IF NOT EXISTS issues (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                title TEXT,
+                publication_date DATETIME DEFAULT CURRENT_TIMESTAMP
+            );
+        `)
+
+        await db.exec(`
+            CREATE TABLE IF NOT EXISTS issue_columns (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                issue_id INTEGER,
+                author TEXT,
+                topic TEXT,
+                content TEXT,
+                FOREIGN KEY(issue_id) REFERENCES issues(id)
             );
         `)
 

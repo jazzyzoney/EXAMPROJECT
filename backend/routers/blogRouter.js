@@ -7,16 +7,17 @@ const router = Router()
 router.get('/api/blogs', async (req, res) => {
     //filtering the blogs
     const { author, status } = req.query
+
     let query = "SELECT * FROM blogs WHERE 1=1"
     let params = []
 
     if (author) {
-        query += " AND author = ?"
+        query += " AND lower(author) = lower(?)"
         params.push(author)
     }
     if (status) {
-        query += " AND status = ?"
-        params.push(status)
+        query += " AND trim(status) = ?"
+        params.push(status.trim())
     }
 
     query += " ORDER BY created_at DESC"
@@ -36,20 +37,21 @@ router.put('/api/blogs/:id', isAdmin, async (req, res) => {
     const { status, title, content } = req.body
 
     try {
-       if (status && !title && !content) {
-             await db.run('UPDATE blogs SET status = ? WHERE id = ?', [status, req.params.id]);
-        } 
+    //    if (status && !title && !content) {
+    //          await db.run('UPDATE blogs SET status = ? WHERE id = ?', [status, req.params.id]);
+    //     } 
         // If we are editing content, run the full update
-        else {
-             await db.run(
-                `UPDATE blogs SET 
-                    status = COALESCE(?, status), 
-                    title = COALESCE(?, title), 
-                    content = COALESCE(?, content) 
-                WHERE id = ?`,
-                [status, title, content, req.params.id]
-            );
-        }
+
+        const cleanStatus = status ? status.trim() : null;
+
+        await db.run(
+            `UPDATE blogs SET 
+                status = COALESCE(?, status), 
+                title = COALESCE(?, title), 
+                content = COALESCE(?, content) 
+            WHERE id = ?`,
+            [cleanStatus, title, content, req.params.id]
+        )
         res.json({ message: "Blog updated successfully" })
     } catch (error) {
         res.status(500).json({ error: "Update failed" })

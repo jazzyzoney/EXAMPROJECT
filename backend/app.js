@@ -1,6 +1,7 @@
 import express from "express" 
 import "dotenv/config" 
 import http from "http"
+import cors from 'cors'
 import { Server } from "socket.io"
 
 import session from "express-session" 
@@ -11,7 +12,6 @@ const server = http.createServer(app);
 
 app.use(express.json());
 
-import cors from 'cors'
 app.use(cors({
     origin: 'http://localhost:5173', 
     credentials: true,
@@ -25,18 +25,17 @@ app.use(session({
     cookie: { secure: false } 
 })) 
 
-
 const io = new Server(server, {
     cors: {
         origin: "http://localhost:5173",
         methods: ["GET", "POST", "PUT", "DELETE"]
     }
-});
+})
 
 app.use((req, res, next) => {
-    req.io = io;
-    next();
-});
+    req.io = io
+    next()
+})
 
 import authRouter from "./routers/authRouter.js" 
 app.use(authRouter) 
@@ -53,9 +52,15 @@ app.use(aiRouter)
 import sosRouter from "./routers/sosRouter.js"
 app.use(sosRouter)
 
+import commentRouter from "./routers/commentRouter.js"
+app.use(commentRouter)
+
+import issueRouter from "./routers/issueRouter.js"
+app.use(issueRouter) 
+
 // fallback
 app.all("/{*splat}", (req, res) => { 
-    res.send(`<h1>404</h1> <h3>didnt find a matching route</h3>`)
+    res.send(`<h1>404</h1> <h3>Didn't find a matching route</h3>`)
 })
 
 const PORT = 8080 

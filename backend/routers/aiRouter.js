@@ -64,7 +64,6 @@ router.post('/api/ai/generate',isAdmin, async (req, res) => {
         // or are they really fans?
         const subscribers = await db.all("SELECT email FROM users WHERE role = 'user'")
         
-        // Loop and send (simplified)
         subscribers.forEach(async (user) => {
             await sendEmail(
                 user.email,

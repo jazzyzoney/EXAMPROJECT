@@ -3,7 +3,6 @@ import db from '../database/connection.js'
 import { isAdmin } from '../middleware/isAdmin.js'
 import { GoogleGenerativeAI } from "@google/generative-ai"
 
-
 const router = Router()
 
 router.post('/api/sos', async (req, res) => {

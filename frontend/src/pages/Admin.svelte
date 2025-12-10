@@ -41,6 +41,21 @@
         }
     }
 
+    async function generateMagazine() {
+        loading = true;
+        message = "Generating full Magazine Issue... (This takes a moment!) 📚";
+        try {
+            const res = await fetch('http://localhost:8080/api/issues/generate', { 
+                method: 'POST', credentials: 'include' 
+            });
+            const data = await res.json();
+            if(data.success) {
+                message = `✨ Published: ${data.title}!`;
+            }
+        } catch(e) { message = "Error generating issue"; }
+        finally { loading = false; }
+}
+
     async function loadDrafts() {
         if (!$user) return
         const res = await fetch(`http://localhost:8080/api/blogs?status=draft&author=${$user.username}`)
@@ -76,6 +91,10 @@
                 {:else}
                     ✨ Write a blog post
                 {/if}
+            </button>
+
+            <button class="mag-btn" on:click={generateMagazine} disabled={loading}>
+            📚 Publish Monthly Magazine
             </button>
         </div>
 
@@ -167,4 +186,6 @@
     }
     .publish-btn:hover { background: #218838; }
     .empty-msg { color: #888; font-style: italic; text-align: center; }
+
+    .mag-btn { background: #6f42c1; color: white; width: 100%; margin-top: 10px; }
 </style>

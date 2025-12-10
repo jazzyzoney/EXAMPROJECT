@@ -4,15 +4,20 @@
     import Admin from './pages/Admin.svelte';
     import Corners from './pages/Corners.svelte';
     import StyleSOS from './pages/StyleSOS.svelte';
+    import Blog from './pages/Blog.svelte'
+    import Issues from './pages/Issues.svelte'
+
     import { user } from './stores/userStore.js';
     import { currentPage } from './stores/pageStore.js';
     
-    // Reactive Logic
-    $: if ($user) {
-        if ($user.role === 'admin') {
-            $currentPage = 'admin';
-        } else {
-            $currentPage = 'home';
+    async function handleLogout() {
+        try {
+            await fetch("http://localhost:8080/api/logout", { method: "POST", credentials: "include" });
+            $user = null;
+            $currentPage = 'home'; // Go to home after logout
+            alert("You have been logged out."); // Simple alert or use toastr if imported
+        } catch (error) {
+            console.error("Logout failed", error);
         }
     }
 
@@ -44,6 +49,10 @@
         <button on:click={() => navigate('sos')} class:active={$currentPage === 'sos'}>
             💋 Style SOS
         </button>
+
+        <button on:click={() => navigate('issues')} class:active={$currentPage === 'issues'}>
+            📚 Issues
+        </button>
         
         {#if $user && $user.role === 'admin'}
             <button on:click={() => navigate('admin')} class:active={$currentPage === 'admin'}>
@@ -56,8 +65,8 @@
                 🔑 Login
             </button>
         {:else}
-            <button class="user-btn" on:click={() => navigate('login')}>
-                👤 {$user.username || $user.email}
+            <button class="logout-btn" on:click={handleLogout}>
+                🚪 Logout ({$user.username})
             </button>
         {/if}
     </nav>
@@ -68,10 +77,14 @@
         {#key $currentPage} 
             {#if $currentPage === 'home'}
                 <Home />
+            {:else if $currentPage === 'blog'} 
+                <Blog />
             {:else if $currentPage === 'corners'}
                 <Corners />
             {:else if $currentPage === 'sos'}
                 <StyleSOS />
+            {:else if $currentPage === 'issues'}
+                <Issues />
             {:else if $currentPage === 'admin'}
                 {#if $user && $user.role === 'admin'}
                     <Admin />
@@ -168,11 +181,6 @@
         box-shadow: 0 4px 10px rgba(214, 51, 132, 0.4);
     }
 
-    .user-btn {
-        border-color: #d63384;
-        color: #d63384;
-    }
-
     /* MAIN CONTAINER */
     main {
         padding: 20px;
@@ -185,5 +193,15 @@
         background: rgba(255, 255, 255, 0.8);
         padding: 20px;
         border-radius: 20px;
+    }
+
+    .logout-btn {
+        background-color: #ffebee;
+        color: #c62828;
+        border: 1px solid #c62828;
+    }
+    .logout-btn:hover {
+        background-color: #c62828;
+        color: white;
     }
 </style>

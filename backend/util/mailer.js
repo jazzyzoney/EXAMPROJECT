@@ -15,6 +15,6 @@ export async function sendEmail(to, subject, text) {
     console.log(`📧 [MOCK EMAIL SENT]`);
     console.log(`   To: ${to}`);
     console.log(`   Subject: ${subject}`);
-    // console.log(`   Body: ${text}`); // Uncomment if you want to see the content
-    return true; // Pretend it worked!
+    // console.log(`   Body: ${text}`); 
+    return true; 
 }
