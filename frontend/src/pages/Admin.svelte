@@ -19,7 +19,7 @@
         message = `${$user.username} is writing a blog... 💅`;
 
         try {
-            const response = await fetch('http://localhost:8080/api/ai/generate', {
+            const response = await fetch('http://localhost:8080/api/blogs/generate', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ character: characterName }),
@@ -65,7 +65,7 @@
 
     async function publishDraft(id) {
         const res = await fetch(`http://localhost:8080/api/blogs/${id}`, {
-            method: 'PUT',
+            method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ status: 'published'}),
             credentials: 'include'

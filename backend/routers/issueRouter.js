@@ -82,4 +82,6 @@ router.post('/api/issues/generate', isAdmin, async (req, res) => {
     }
 })
 
+// delete issue
+
 export default router
