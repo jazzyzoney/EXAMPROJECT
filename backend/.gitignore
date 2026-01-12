@@ -131,5 +131,6 @@ dist
 .pnp.*
 
 .env
+auth.db
 
 package-lock.json
